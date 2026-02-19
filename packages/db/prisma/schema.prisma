@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  OPERATOR
+}
+
+enum Platform {
+  REDTRACK
+  META
+  GOOGLE_ADS
+  TIKTOK
+  OTHER
+}
+
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users     User[]
+  sources   IntegrationSource[]
+}
+
+model User {
+  id        String   @id @default(cuid())
+  orgId     String
+  email     String
+  name      String
+  role      UserRole @default(OPERATOR)
+  passwordHash String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  org Organization @relation(fields: [orgId], references: [id])
+
+  @@unique([orgId, email])
+}
+
+model IntegrationSource {
+  id        String   @id @default(cuid())
+  orgId     String
+  platform  Platform
+  name      String
+
+  // tokens/credenciais (ideal: criptografar ou guardar em Secrets Manager em prod)
+  accessToken String?
+  refreshToken String?
+  expiresAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  org Organization @relation(fields: [orgId], references: [id])
+
+  @@index([orgId, platform])
+}
+
+model RawEvent {
+  id          String   @id @default(cuid())
+  orgId       String
+  platform    Platform
+  externalId  String
+  occurredAt  DateTime
+  ingestedAt  DateTime @default(now())
+
+  payloadJson Json
+
+  @@unique([orgId, platform, externalId])
+  @@index([orgId, occurredAt])
+  @@index([platform, occurredAt])
+}
+
+model FactKpiDaily {
+  id        String   @id @default(cuid())
+  orgId     String
+  date      DateTime @db.Date
+  productId String?
+
+  revenue   Decimal  @default(0) @db.Decimal(18,2)
+  spend     Decimal  @default(0) @db.Decimal(18,2)
+  profit    Decimal  @default(0) @db.Decimal(18,2)
+
+  roas      Decimal  @default(0) @db.Decimal(18,4)
+  roi       Decimal  @default(0) @db.Decimal(18,4)
+  cpa       Decimal  @default(0) @db.Decimal(18,4)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([orgId, date, productId])
+  @@index([orgId, date])
+}

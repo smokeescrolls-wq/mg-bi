@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  /* AWS-like glow: só sombra, sem pintar o fundo */
+  .aws-neon {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .aws-neon::before {
+    content: "";
+    position: absolute;
+    inset: -2px; /* glow “pra fora” */
+    border-radius: inherit;
+    pointer-events: none;
+
+    opacity: 0;
+    transition: opacity 180ms ease;
+
+    /* SOMENTE SHADOW/GLOW (sem background) */
+    box-shadow:
+      0 0 0 2px rgba(255, 90, 205, 0.22),
+      0 0 22px rgba(255, 90, 205, 0.22),
+      0 0 38px rgba(168, 85, 247, 0.2),
+      0 0 58px rgba(236, 72, 153, 0.16);
+
+    z-index: -1; /* atrás do item */
+  }
+
+  /* borda interna bem sutil (opcional) */
+  .aws-neon::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+
+    opacity: 0;
+    transition: opacity 180ms ease;
+
+    box-shadow: 0 0 0 1px rgba(168, 85, 247, 0.16) inset;
+
+    z-index: 0;
+  }
+
+  .aws-neon:hover::before,
+  .aws-neon:hover::after,
+  .aws-neon:focus-visible::before,
+  .aws-neon:focus-visible::after,
+  .aws-neon--active::before,
+  .aws-neon--active::after {
+    opacity: 1;
+  }
+}

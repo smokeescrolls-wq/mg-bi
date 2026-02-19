@@ -1,0 +1,27 @@
+{
+  "name": "@mg/db",
+  "version": "0.0.1",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean --tsconfig tsconfig.json",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch --tsconfig tsconfig.json"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.2"
+  },
+  "devDependencies": {
+    "prisma": "^6.19.2",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  }
+}
+
