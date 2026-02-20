@@ -1,5 +1,3 @@
-﻿module.exports = {
-  '*.{ts,tsx}': ['eslint --fix --no-warn-ignored', 'prettier --write'],
-  '*.{json,md,yml,yaml}': ['prettier --write'],
-  '*.prisma': ['prettier --write'],
+module.exports = {
+  '*.{ts,tsx,json,md,yml,yaml,prisma}': ['prettier --write'],
 };
